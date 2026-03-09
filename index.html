@@ -550,26 +550,36 @@
     }
 
     function normalizeSelectionFromUrl() {
-      const urlId = new URL(window.location.href).searchParams.get('meeting');
-      const exists = urlId && state.meetings.some(m => m.id === urlId);
-      if (exists) {
-        state.selectedMeetingId = urlId;
-      } else if (!state.selectedMeetingId || !state.meetings.some(m => m.id === state.selectedMeetingId)) {
-        state.selectedMeetingId = state.meetings[0]?.id || null;
-      }
-      const meeting = getSelectedMeeting();
-      if (!meeting) {
-        state.activeParticipantId = null;
-        syncUrl(null);
-        return;
-      }
-      if (!meeting.participants?.length) {
-        state.activeParticipantId = null;
-      } else if (!meeting.participants.some(p => p.id === state.activeParticipantId)) {
-        state.activeParticipantId = meeting.participants[0].id;
-      }
-      syncUrl(meeting.id);
-    }
+  const urlId = new URL(window.location.href).searchParams.get('meeting');
+  const currentExists =
+    state.selectedMeetingId && state.meetings.some(m => m.id === state.selectedMeetingId);
+  const urlExists =
+    urlId && state.meetings.some(m => m.id === urlId);
+
+  if (currentExists) {
+    // שומרים את הבחירה הנוכחית של המשתמש בתוך האפליקציה
+  } else if (urlExists) {
+    // רק אם אין בחירה קיימת, נשתמש במה שמופיע בלינק
+    state.selectedMeetingId = urlId;
+  } else {
+    state.selectedMeetingId = state.meetings[0]?.id || null;
+  }
+
+  const meeting = getSelectedMeeting();
+  if (!meeting) {
+    state.activeParticipantId = null;
+    syncUrl(null);
+    return;
+  }
+
+  if (!meeting.participants?.length) {
+    state.activeParticipantId = null;
+  } else if (!meeting.participants.some(p => p.id === state.activeParticipantId)) {
+    state.activeParticipantId = meeting.participants[0].id;
+  }
+
+  syncUrl(meeting.id);
+}
 
     function syncUrl(meetingId) {
       const url = new URL(window.location.href);
@@ -1232,4 +1242,5 @@
   </script>
 </body>
 </html>
+
 
