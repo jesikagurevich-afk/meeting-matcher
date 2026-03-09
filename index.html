@@ -3,122 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meeting Matcher</title>
+  <title>Meeting Matcher Cloud</title>
   <style>
     :root {
-      --bg: #f6f7fb;
+      --bg: #f6f8fc;
       --card: #ffffff;
-      --line: #e4e7ee;
-      --text: #1d2433;
-      --muted: #697184;
-      --accent: #3b82f6;
-      --accent-soft: #e9f1ff;
+      --line: #e3e8f2;
+      --text: #162032;
+      --muted: #657089;
+      --accent: #2563eb;
+      --accent-soft: #eaf1ff;
       --success: #16a34a;
       --success-soft: #e9f9ef;
       --warning: #f59e0b;
-      --warning-soft: #fff5df;
+      --warning-soft: #fff6df;
       --danger: #dc2626;
-      --danger-soft: #feecec;
-      --shadow: 0 12px 30px rgba(21, 33, 58, 0.08);
+      --danger-soft: #feeeee;
+      --violet: #7c3aed;
+      --violet-soft: #f3ecff;
+      --shadow: 0 18px 40px rgba(31, 49, 87, 0.08);
       --radius: 18px;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
-
+    button, input, textarea, select { font: inherit; }
+    a { color: inherit; }
     .app {
       display: grid;
       grid-template-columns: 340px 1fr;
       min-height: 100vh;
     }
-
     .sidebar {
-      background: #111827;
+      background: #101827;
       color: #fff;
       padding: 22px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       border-left: 1px solid rgba(255,255,255,0.08);
     }
-
     .brand h1 {
       margin: 0 0 8px;
       font-size: 28px;
     }
-
     .brand p {
       margin: 0;
-      color: rgba(255,255,255,0.76);
-      line-height: 1.5;
       font-size: 14px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.78);
     }
-
     .card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
-
     .sidebar .card {
       background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.09);
       box-shadow: none;
     }
-
-    .panel {
-      padding: 18px;
-    }
-
+    .panel { padding: 18px; }
     .field {
       display: grid;
       gap: 8px;
       margin-bottom: 14px;
     }
-
     .field label {
       font-size: 13px;
-      color: var(--muted);
       font-weight: 700;
+      color: var(--muted);
     }
-
-    .sidebar .field label {
-      color: rgba(255,255,255,0.8);
-    }
-
-    input, select, button, textarea {
-      font: inherit;
-    }
-
-    input, select, textarea {
+    .sidebar .field label { color: rgba(255,255,255,0.82); }
+    input, textarea, select {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: #fff;
-      padding: 12px 14px;
       color: var(--text);
+      padding: 12px 14px;
       outline: none;
     }
-
-    .sidebar input,
-    .sidebar select,
-    .sidebar textarea {
-      background: rgba(255,255,255,0.92);
+    .sidebar input, .sidebar textarea, .sidebar select {
+      background: rgba(255,255,255,0.94);
       border-color: transparent;
     }
-
-    input:focus, select:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
-
     .btn {
       border: none;
       border-radius: 12px;
@@ -127,118 +105,76 @@
       font-weight: 700;
       transition: 0.18s ease;
     }
-
     .btn:hover { transform: translateY(-1px); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: #eef2f7;
-      color: var(--text);
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: #fff;
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: #fff;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--text);
-    }
-
-    .btn-soft-warning {
-      background: var(--warning-soft);
-      color: #8a5a00;
-    }
-
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: #eef2f7; color: var(--text); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning-soft); color: #8b5a00; }
+    .btn-violet { background: var(--violet); color: #fff; }
     .btn-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .main {
-      padding: 26px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 18px;
     }
-
-    .topbar {
+    .status-banner {
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: #fff;
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
+      align-items: center;
       flex-wrap: wrap;
     }
-
-    .topbar h2 {
-      margin: 0 0 6px;
-      font-size: 28px;
-    }
-
-    .topbar p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
+    .status-banner strong { display: block; margin-bottom: 4px; }
+    .status-demo { background: var(--warning-soft); border-color: rgba(245, 158, 11, 0.2); }
+    .status-live { background: var(--success-soft); border-color: rgba(22, 163, 74, 0.2); }
     .meeting-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-height: 46vh;
       overflow: auto;
-      padding-left: 2px;
     }
-
     .meeting-item {
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 14px;
-      background: rgba(255,255,255,0.04);
       padding: 14px;
       cursor: pointer;
+      background: rgba(255,255,255,0.04);
       display: grid;
-      gap: 6px;
+      gap: 8px;
       transition: 0.18s ease;
     }
-
-    .meeting-item:hover,
-    .meeting-item.active {
+    .meeting-item:hover, .meeting-item.active {
       background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.28);
+      border-color: rgba(255,255,255,0.25);
     }
-
     .meeting-title-row {
       display: flex;
       justify-content: space-between;
+      gap: 8px;
       align-items: center;
-      gap: 10px;
     }
-
     .meeting-title {
       font-weight: 700;
       font-size: 15px;
     }
-
     .meeting-meta {
+      color: rgba(255,255,255,0.76);
       font-size: 12px;
-      color: rgba(255,255,255,0.72);
       display: flex;
-      flex-wrap: wrap;
       gap: 8px;
+      flex-wrap: wrap;
     }
-
     .badge {
       display: inline-flex;
       align-items: center;
@@ -249,54 +185,63 @@
       font-weight: 700;
       white-space: nowrap;
     }
-
-    .badge-open {
-      background: var(--warning-soft);
-      color: #8a5a00;
+    .badge-open { background: var(--warning-soft); color: #8b5a00; }
+    .badge-closed { background: var(--success-soft); color: #0d7a36; }
+    .badge-violet { background: var(--violet-soft); color: #5f2dc7; }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
     }
-
-    .badge-closed {
-      background: var(--success-soft);
-      color: #0c7a35;
+    .hero h2 {
+      margin: 0 0 6px;
+      font-size: 28px;
     }
-
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
     .grid-2 {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.12fr 0.88fr;
       gap: 18px;
     }
-
     .section-header {
       padding: 18px 18px 0;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
+      align-items: center;
       flex-wrap: wrap;
     }
-
     .section-header h3 {
       margin: 0;
       font-size: 20px;
     }
-
     .section-header p {
       margin: 4px 0 0;
-      color: var(--muted);
       font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
     }
-
-    .content-pad {
-      padding: 18px;
+    .content-pad { padding: 18px; }
+    .empty-state {
+      border: 2px dashed var(--line);
+      border-radius: 18px;
+      padding: 30px;
+      background: rgba(255,255,255,0.55);
+      color: var(--muted);
+      text-align: center;
     }
-
     .participants-tabs {
       display: flex;
       gap: 10px;
       overflow: auto;
       padding-bottom: 6px;
     }
-
     .tab-btn {
       border: 1px solid var(--line);
       background: #fff;
@@ -306,85 +251,73 @@
       font-weight: 700;
       white-space: nowrap;
     }
-
     .tab-btn.active {
       background: var(--accent-soft);
-      border-color: rgba(59, 130, 246, 0.35);
-      color: #1755b3;
+      border-color: rgba(37,99,235,0.25);
+      color: #1a56c3;
     }
-
-    .participant-panel {
-      display: grid;
-      gap: 14px;
-    }
-
     .slot-form {
       display: grid;
       grid-template-columns: 1fr 1fr auto;
       gap: 10px;
       align-items: end;
     }
-
+    .bulk-box {
+      margin-top: 14px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfcff;
+    }
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
     .slots-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: 340px;
+      max-height: 280px;
       overflow: auto;
-      padding-left: 2px;
+      margin-top: 14px;
     }
-
     .slot-item {
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 12px 14px;
+      background: #fff;
       display: flex;
-      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: #fff;
+      align-items: center;
     }
-
     .slot-text strong {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
-
-    .slot-text small {
-      color: var(--muted);
-    }
-
+    .slot-text small { color: var(--muted); }
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-
     .summary-box {
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 14px;
       background: #fff;
     }
-
     .summary-box h4 {
       margin: 0 0 8px;
       font-size: 13px;
       color: var(--muted);
     }
-
     .summary-box .big {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
     }
-
-    .recommendation-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
     .recommendation-item {
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -393,20 +326,14 @@
       display: grid;
       gap: 10px;
     }
-
     .recommendation-top {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      flex-wrap: wrap;
       align-items: center;
+      flex-wrap: wrap;
     }
-
-    .progress-wrap {
-      display: grid;
-      gap: 8px;
-    }
-
+    .progress-wrap { display: grid; gap: 8px; }
     .progress-label {
       display: flex;
       justify-content: space-between;
@@ -414,7 +341,6 @@
       color: var(--muted);
       font-size: 13px;
     }
-
     .progress {
       width: 100%;
       height: 10px;
@@ -422,147 +348,236 @@
       border-radius: 999px;
       overflow: hidden;
     }
-
     .progress > span {
       display: block;
       height: 100%;
       background: linear-gradient(90deg, #60a5fa, #2563eb);
       border-radius: 999px;
     }
-
     .names-line {
       font-size: 14px;
+      line-height: 1.55;
       color: var(--muted);
-      line-height: 1.5;
     }
-
+    .link-box, .finalized-box {
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .link-box {
+      border: 1px solid rgba(124,58,237,0.18);
+      background: var(--violet-soft);
+    }
     .finalized-box {
       border: 1px solid rgba(22,163,74,0.18);
       background: var(--success-soft);
+    }
+    .share-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .share-input {
+      background: rgba(255,255,255,0.95);
+    }
+    .heatmap-wrap {
+      margin-top: 14px;
+      border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 16px;
+      overflow: auto;
+      background: #fff;
     }
-
-    .empty-state {
-      border: 2px dashed var(--line);
-      border-radius: 18px;
-      padding: 28px;
-      text-align: center;
+    .heatmap-header, .heatmap-row {
+      display: grid;
+      grid-template-columns: 180px repeat(var(--cols, 1), minmax(130px, 1fr));
+      min-width: max-content;
+    }
+    .heatmap-header > div,
+    .heatmap-row > div {
+      border-left: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+    }
+    .heatmap-header {
+      background: #f9fbff;
+      font-weight: 700;
+    }
+    .heatmap-side {
+      background: #fafbfd;
+      font-weight: 700;
+      position: sticky;
+      right: 0;
+      z-index: 2;
+    }
+    .heat-cell {
+      display: grid;
+      gap: 6px;
+      min-height: 78px;
+    }
+    .heat-cell small {
       color: var(--muted);
-      background: rgba(255,255,255,0.55);
+      line-height: 1.4;
     }
-
-    .helper {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
+    .heat-0 { background: #fff; }
+    .heat-1 { background: #f7fbff; }
+    .heat-2 { background: #eaf2ff; }
+    .heat-3 { background: #dbe9ff; }
+    .heat-4 { background: #c8dcff; }
+    .heat-5 { background: #b0ceff; }
+    .heat-perfect {
+      background: #dcfce7;
+      box-shadow: inset 0 0 0 2px rgba(22,163,74,0.2);
     }
-
+    .top3 {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
     .footer-note {
       margin-top: auto;
       color: rgba(255,255,255,0.72);
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
-
     @media (max-width: 1180px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+      .grid-2 { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 980px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        border-left: none;
-      }
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-left: none; }
     }
-
-    @media (max-width: 700px) {
-      .main {
-        padding: 18px;
-      }
-
-      .slot-form,
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 760px) {
+      .main { padding: 16px; }
+      .summary-grid, .slot-form { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div id="app"></div>
 
-  <script>
-    const STORAGE_KEY = 'meeting-matcher-v1';
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import {
+      getFirestore,
+      collection,
+      doc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      serverTimestamp,
+      query,
+      orderBy
+    } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
-    const initialState = {
-      meetings: [],
-      selectedMeetingId: null,
-      activeParticipantId: null
+    const FIREBASE_CONFIG = {
+      apiKey: 'PASTE_YOUR_API_KEY',
+      authDomain: 'PASTE_YOUR_AUTH_DOMAIN',
+      projectId: 'PASTE_YOUR_PROJECT_ID',
+      storageBucket: 'PASTE_YOUR_STORAGE_BUCKET',
+      messagingSenderId: 'PASTE_YOUR_MESSAGING_SENDER_ID',
+      appId: 'PASTE_YOUR_APP_ID'
     };
 
-    let state = loadState();
+    const DEMO_STORAGE_KEY = 'meeting-matcher-demo-v2';
+    const isFirebaseConfigured = Object.values(FIREBASE_CONFIG).every(v => typeof v === 'string' && v && !v.startsWith('PASTE_YOUR_'));
+
+    const state = {
+      mode: isFirebaseConfigured ? 'live' : 'demo',
+      meetings: [],
+      selectedMeetingId: null,
+      activeParticipantId: null,
+      unsubscribe: null
+    };
+
+    let db = null;
+
+    if (isFirebaseConfigured) {
+      const app = initializeApp(FIREBASE_CONFIG);
+      db = getFirestore(app);
+      subscribeMeetings();
+    } else {
+      loadDemoMeetings();
+    }
 
     function uid(prefix = 'id') {
       return `${prefix}_${Math.random().toString(36).slice(2, 9)}${Date.now().toString(36).slice(-4)}`;
     }
 
-    function loadState() {
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function getDefaultMeeting(name) {
+      return {
+        name,
+        status: 'open',
+        finalizedSlot: null,
+        notes: '',
+        createdAt: Date.now(),
+        participants: []
+      };
+    }
+
+    function loadDemoMeetings() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return structuredClone(initialState);
-        const parsed = JSON.parse(raw);
-        return {
-          meetings: Array.isArray(parsed.meetings) ? parsed.meetings : [],
-          selectedMeetingId: parsed.selectedMeetingId || null,
-          activeParticipantId: parsed.activeParticipantId || null
-        };
-      } catch (error) {
-        console.error('Failed to load state', error);
-        return structuredClone(initialState);
+        const raw = localStorage.getItem(DEMO_STORAGE_KEY);
+        state.meetings = raw ? JSON.parse(raw) : [];
+      } catch {
+        state.meetings = [];
       }
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function updateState(mutator) {
-      mutator(state);
-      normalizeState();
-      saveState();
+      normalizeSelectionFromUrl();
       render();
     }
 
-    function normalizeState() {
-      if (!state.meetings.length) {
-        state.selectedMeetingId = null;
-        state.activeParticipantId = null;
-        return;
-      }
+    function saveDemoMeetings() {
+      localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(state.meetings));
+    }
 
-      const selectedMeeting = getSelectedMeeting();
-      if (!selectedMeeting) {
-        state.selectedMeetingId = state.meetings[0].id;
-      }
+    function subscribeMeetings() {
+      const q = query(collection(db, 'meetings'), orderBy('createdAt', 'desc'));
+      state.unsubscribe = onSnapshot(q, snap => {
+        state.meetings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        normalizeSelectionFromUrl();
+        render();
+      }, error => {
+        console.error(error);
+        alert('יש בעיה בחיבור ל-Firebase. בדקי שההגדרות נכונות.');
+      });
+    }
 
+    function normalizeSelectionFromUrl() {
+      const urlId = new URL(window.location.href).searchParams.get('meeting');
+      const exists = urlId && state.meetings.some(m => m.id === urlId);
+      if (exists) {
+        state.selectedMeetingId = urlId;
+      } else if (!state.selectedMeetingId || !state.meetings.some(m => m.id === state.selectedMeetingId)) {
+        state.selectedMeetingId = state.meetings[0]?.id || null;
+      }
       const meeting = getSelectedMeeting();
-      if (!meeting) return;
-
-      if (!meeting.participants.length) {
+      if (!meeting) {
         state.activeParticipantId = null;
+        syncUrl(null);
         return;
       }
-
-      const activeExists = meeting.participants.some(p => p.id === state.activeParticipantId);
-      if (!activeExists) {
+      if (!meeting.participants?.length) {
+        state.activeParticipantId = null;
+      } else if (!meeting.participants.some(p => p.id === state.activeParticipantId)) {
         state.activeParticipantId = meeting.participants[0].id;
       }
+      syncUrl(meeting.id);
+    }
+
+    function syncUrl(meetingId) {
+      const url = new URL(window.location.href);
+      if (meetingId) {
+        url.searchParams.set('meeting', meetingId);
+      } else {
+        url.searchParams.delete('meeting');
+      }
+      window.history.replaceState({}, '', url.toString());
     }
 
     function getSelectedMeeting() {
@@ -573,237 +588,99 @@
       return state.meetings.find(m => m.id === id) || null;
     }
 
-    function createMeeting(name) {
+    async function createMeeting(name) {
       const trimmed = name.trim();
-      if (!trimmed) {
-        alert('צריך שם לפגישה.');
-        return;
-      }
+      if (!trimmed) return alert('צריך שם לפגישה.');
+      const payload = getDefaultMeeting(trimmed);
 
-      updateState(s => {
-        const meeting = {
-          id: uid('meeting'),
-          name: trimmed,
-          status: 'open',
-          finalizedSlot: null,
-          createdAt: new Date().toISOString(),
-          participants: [],
-          notes: ''
-        };
-        s.meetings.unshift(meeting);
-        s.selectedMeetingId = meeting.id;
-        s.activeParticipantId = null;
-      });
+      if (state.mode === 'live') {
+        const ref = await addDoc(collection(db, 'meetings'), { ...payload, createdAt: serverTimestamp() });
+        state.selectedMeetingId = ref.id;
+      } else {
+        const localDoc = { id: uid('meeting'), ...payload };
+        state.meetings.unshift(localDoc);
+        state.selectedMeetingId = localDoc.id;
+        saveDemoMeetings();
+        normalizeSelectionFromUrl();
+        render();
+      }
     }
 
-    function deleteMeeting(meetingId) {
+    async function patchMeeting(meetingId, updater) {
       const meeting = getMeetingById(meetingId);
       if (!meeting) return;
-      const ok = confirm(`למחוק את הפגישה "${meeting.name}"? כל הנתונים יימחקו.`);
-      if (!ok) return;
+      const nextMeeting = clone(meeting);
+      updater(nextMeeting);
 
-      updateState(s => {
-        s.meetings = s.meetings.filter(m => m.id !== meetingId);
-      });
-    }
-
-    function addParticipant(meetingId, name) {
-      const trimmed = name.trim();
-      if (!trimmed) {
-        alert('צריך שם משתתף.');
-        return;
+      if (state.mode === 'live') {
+        await updateDoc(doc(db, 'meetings', meetingId), {
+          name: nextMeeting.name,
+          status: nextMeeting.status,
+          finalizedSlot: nextMeeting.finalizedSlot,
+          notes: nextMeeting.notes || '',
+          participants: nextMeeting.participants || []
+        });
+      } else {
+        const idx = state.meetings.findIndex(m => m.id === meetingId);
+        state.meetings[idx] = nextMeeting;
+        saveDemoMeetings();
+        normalizeSelectionFromUrl();
+        render();
       }
-
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-
-        const exists = meeting.participants.some(p => p.name.trim().toLowerCase() === trimmed.toLowerCase());
-        if (exists) {
-          alert('המשתתף כבר קיים בפגישה הזאת.');
-          return;
-        }
-
-        const participant = {
-          id: uid('person'),
-          name: trimmed,
-          slots: []
-        };
-        meeting.participants.push(participant);
-        s.activeParticipantId = participant.id;
-      });
     }
 
-    function renameParticipant(meetingId, participantId, nextName) {
-      const trimmed = nextName.trim();
-      if (!trimmed) {
-        alert('שם משתתף לא יכול להיות ריק.');
-        return;
-      }
-
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        const duplicate = meeting.participants.some(p => p.id !== participantId && p.name.trim().toLowerCase() === trimmed.toLowerCase());
-        if (duplicate) {
-          alert('כבר יש משתתף אחר עם השם הזה בפגישה הזאת.');
-          return;
-        }
-        const participant = meeting.participants.find(p => p.id === participantId);
-        if (!participant) return;
-        participant.name = trimmed;
-      });
-    }
-
-    function removeParticipant(meetingId, participantId) {
+    async function removeMeeting(meetingId) {
       const meeting = getMeetingById(meetingId);
-      const participant = meeting?.participants.find(p => p.id === participantId);
-      if (!meeting || !participant) return;
-      const ok = confirm(`למחוק את ${participant.name} מהפגישה?`);
-      if (!ok) return;
+      if (!meeting) return;
+      if (!confirm(`למחוק את הפגישה "${meeting.name}"?`)) return;
 
-      updateState(s => {
-        const targetMeeting = s.meetings.find(m => m.id === meetingId);
-        if (!targetMeeting) return;
-        targetMeeting.participants = targetMeeting.participants.filter(p => p.id !== participantId);
-      });
-    }
-
-    function addSlot(meetingId, participantId, date, time) {
-      if (!date || !time) {
-        alert('צריך לבחור גם תאריך וגם שעה.');
-        return;
+      if (state.mode === 'live') {
+        await deleteDoc(doc(db, 'meetings', meetingId));
+      } else {
+        state.meetings = state.meetings.filter(m => m.id !== meetingId);
+        saveDemoMeetings();
+        normalizeSelectionFromUrl();
+        render();
       }
-      const iso = `${date}T${time}`;
-
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        const participant = meeting?.participants.find(p => p.id === participantId);
-        if (!participant) return;
-        const exists = participant.slots.some(slot => slot.iso === iso);
-        if (exists) {
-          alert('הזמן הזה כבר קיים אצל המשתתף הזה.');
-          return;
-        }
-        participant.slots.push({ id: uid('slot'), iso });
-        participant.slots.sort((a, b) => a.iso.localeCompare(b.iso));
-      });
-    }
-
-    function removeSlot(meetingId, participantId, slotId) {
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        const participant = meeting?.participants.find(p => p.id === participantId);
-        if (!participant) return;
-        participant.slots = participant.slots.filter(slot => slot.id !== slotId);
-      });
-    }
-
-    function finalizeMeeting(meetingId, iso) {
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        meeting.finalizedSlot = iso;
-        meeting.status = 'closed';
-      });
-    }
-
-    function reopenMeeting(meetingId) {
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        meeting.status = 'open';
-      });
-    }
-
-    function clearFinalizedSlot(meetingId) {
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        meeting.finalizedSlot = null;
-        meeting.status = 'open';
-      });
-    }
-
-    function updateMeetingName(meetingId, nextName) {
-      const trimmed = nextName.trim();
-      if (!trimmed) {
-        alert('שם פגישה לא יכול להיות ריק.');
-        return;
-      }
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        meeting.name = trimmed;
-      });
-    }
-
-    function updateMeetingNotes(meetingId, notes) {
-      updateState(s => {
-        const meeting = s.meetings.find(m => m.id === meetingId);
-        if (!meeting) return;
-        meeting.notes = notes;
-      });
-    }
-
-    function exportData() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'meeting-matcher-backup.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importData(file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          state = {
-            meetings: Array.isArray(parsed.meetings) ? parsed.meetings : [],
-            selectedMeetingId: parsed.selectedMeetingId || null,
-            activeParticipantId: parsed.activeParticipantId || null
-          };
-          normalizeState();
-          saveState();
-          render();
-        } catch (error) {
-          alert('הקובץ לא תקין.');
-        }
-      };
-      reader.readAsText(file);
     }
 
     function formatDateTime(iso) {
-      const date = new Date(iso);
-      if (Number.isNaN(date.getTime())) return iso;
-      return new Intl.DateTimeFormat('he-IL', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-      }).format(date);
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return new Intl.DateTimeFormat('he-IL', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return new Intl.DateTimeFormat('he-IL', { dateStyle: 'medium' }).format(d);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function computeMeetingStats(meeting) {
-      const participantCount = meeting.participants.length;
+      const participantCount = meeting.participants?.length || 0;
       const slotMap = new Map();
 
-      meeting.participants.forEach(participant => {
-        participant.slots.forEach(slot => {
-          if (!slotMap.has(slot.iso)) {
-            slotMap.set(slot.iso, []);
-          }
-          slotMap.get(slot.iso).push(participant.name);
+      (meeting.participants || []).forEach(participant => {
+        const uniqueIsos = [...new Set((participant.slots || []).map(s => s.iso))];
+        uniqueIsos.forEach(iso => {
+          if (!slotMap.has(iso)) slotMap.set(iso, []);
+          slotMap.get(iso).push(participant.name);
         });
       });
 
       const recommendations = Array.from(slotMap.entries()).map(([iso, names]) => {
         const uniqueNames = [...new Set(names)].sort((a, b) => a.localeCompare(b, 'he'));
         const count = uniqueNames.length;
-        const missing = meeting.participants
-          .map(p => p.name)
-          .filter(name => !uniqueNames.includes(name));
+        const missing = (meeting.participants || []).map(p => p.name).filter(n => !uniqueNames.includes(n));
         return {
           iso,
           count,
@@ -812,37 +689,54 @@
           percentage: participantCount ? Math.round((count / participantCount) * 100) : 0,
           isPerfect: participantCount > 0 && count === participantCount
         };
-      }).sort((a, b) => {
-        if (b.count !== a.count) return b.count - a.count;
-        return a.iso.localeCompare(b.iso);
-      });
+      }).sort((a, b) => b.count - a.count || a.iso.localeCompare(b.iso));
+
+      const days = [...new Set(recommendations.map(r => r.iso.slice(0, 10)))].sort();
+      const times = [...new Set(recommendations.map(r => r.iso.slice(11, 16)))].sort();
+      const matrix = times.map(time => ({
+        time,
+        cells: days.map(day => {
+          const iso = `${day}T${time}`;
+          return recommendations.find(r => r.iso === iso) || {
+            iso,
+            count: 0,
+            names: [],
+            missing: (meeting.participants || []).map(p => p.name),
+            percentage: 0,
+            isPerfect: false
+          };
+        })
+      }));
 
       return {
         participantCount,
-        allMarkedSlots: recommendations.length,
+        slotCount: recommendations.length,
         recommendations,
         perfectMatches: recommendations.filter(r => r.isPerfect),
-        best: recommendations[0] || null
+        best: recommendations[0] || null,
+        top3: recommendations.slice(0, 3),
+        days,
+        times,
+        matrix
       };
     }
 
     function meetingListHtml() {
       if (!state.meetings.length) {
-        return `<div class="helper">עדיין אין פגישות. יוצרים פגישה חדשה מהטופס למעלה.</div>`;
+        return `<div class="helper">עדיין אין פגישות. צרי את הראשונה בטופס למעלה.</div>`;
       }
-
       return state.meetings.map(meeting => {
         const stats = computeMeetingStats(meeting);
-        const isActive = state.selectedMeetingId === meeting.id;
+        const active = meeting.id === state.selectedMeetingId;
         return `
-          <div class="meeting-item ${isActive ? 'active' : ''}" onclick="selectMeeting('${meeting.id}')">
+          <div class="meeting-item ${active ? 'active' : ''}" onclick="selectMeeting('${meeting.id}')">
             <div class="meeting-title-row">
               <div class="meeting-title">${escapeHtml(meeting.name)}</div>
               <span class="badge ${meeting.status === 'closed' ? 'badge-closed' : 'badge-open'}">${meeting.status === 'closed' ? 'סגורה' : 'פתוחה'}</span>
             </div>
             <div class="meeting-meta">
-              <span>משתתפים: ${meeting.participants.length}</span>
-              <span>אפשרויות: ${stats.allMarkedSlots}</span>
+              <span>משתתפים: ${(meeting.participants || []).length}</span>
+              <span>אפשרויות: ${stats.slotCount}</span>
             </div>
             ${meeting.finalizedSlot ? `<div class="meeting-meta"><span>נקבעה ל־${escapeHtml(formatDateTime(meeting.finalizedSlot))}</span></div>` : ''}
           </div>
@@ -850,100 +744,16 @@
       }).join('');
     }
 
-    function selectedMeetingHtml() {
-      const meeting = getSelectedMeeting();
-      if (!meeting) {
-        return `
-          <div class="card">
-            <div class="content-pad">
-              <div class="empty-state">
-                <h3>עוד אין פגישה פתוחה לעבודה</h3>
-                <p>צרי פגישה חדשה מצד ימין, הוסיפי משתתפים, ואז התחילי להזין תאריכים ושעות.</p>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      const stats = computeMeetingStats(meeting);
-      const activeParticipant = meeting.participants.find(p => p.id === state.activeParticipantId) || null;
-
-      return `
-        <div class="topbar card">
-          <div class="panel" style="width: 100%;">
-            <div class="topbar">
-              <div>
-                <h2>${escapeHtml(meeting.name)}</h2>
-                <p>
-                  ${meeting.status === 'closed' ? 'הפגישה סגורה, אבל כל האפשרויות שסימנת נשמרו.' : 'הפגישה פתוחה. אפשר להמשיך להוסיף, למחוק ולשנות זמינויות.'}
-                </p>
-              </div>
-              <div class="btn-row">
-                <button class="btn btn-secondary" onclick="renameMeetingPrompt('${meeting.id}')">שינוי שם</button>
-                <button class="btn btn-secondary" onclick="exportData()">ייצוא גיבוי</button>
-                <button class="btn btn-danger" onclick="deleteMeeting('${meeting.id}')">מחיקת פגישה</button>
-              </div>
-            </div>
-            <div class="field" style="margin-top: 14px; margin-bottom: 0;">
-              <label>הערות פנימיות</label>
-              <textarea rows="3" placeholder="למשל: לקוחה מעדיפה ימים שלישי-רביעי" oninput="updateMeetingNotes('${meeting.id}', this.value)">${escapeHtml(meeting.notes || '')}</textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="section-header">
-              <div>
-                <h3>ניהול משתתפים וזמינויות</h3>
-                <p>לכל משתתף יש לשונית משלו, ובתוכה אפשר להוסיף בלי הגבלה תאריכים ושעות.</p>
-              </div>
-              <button class="btn btn-primary" onclick="addParticipantPrompt('${meeting.id}')">+ משתתף חדש</button>
-            </div>
-            <div class="content-pad">
-              ${meeting.participants.length ? `
-                <div class="participants-tabs">
-                  ${meeting.participants.map(participant => `
-                    <button class="tab-btn ${participant.id === state.activeParticipantId ? 'active' : ''}" onclick="setActiveParticipant('${participant.id}')">
-                      ${escapeHtml(participant.name)}
-                    </button>
-                  `).join('')}
-                </div>
-                <div style="height: 14px;"></div>
-                ${activeParticipant ? participantPanelHtml(meeting, activeParticipant) : ''}
-              ` : `
-                <div class="empty-state">
-                  <h3>אין עדיין משתתפים בפגישה הזאת</h3>
-                  <p>התחילי מהוספת המשתתף הראשון ואז תופיע לו לשונית נפרדת עם הזנת תאריכים ושעות.</p>
-                </div>
-              `}
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="section-header">
-              <div>
-                <h3>התאריך המתאים ביותר</h3>
-                <p>המערכת מדרגת את כל האפשרויות לפי מספר המשתתפים שיכולים בכל מועד.</p>
-              </div>
-            </div>
-            <div class="content-pad">
-              ${summaryHtml(meeting, stats)}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
     function participantPanelHtml(meeting, participant) {
+      if (!participant) return '';
       return `
-        <div class="participant-panel">
+        <div>
           <div class="btn-row">
             <button class="btn btn-secondary" onclick="renameParticipantPrompt('${meeting.id}', '${participant.id}')">שינוי שם</button>
             <button class="btn btn-danger" onclick="removeParticipant('${meeting.id}', '${participant.id}')">מחיקת משתתף</button>
           </div>
 
-          <div class="slot-form">
+          <div class="slot-form" style="margin-top:14px;">
             <div class="field" style="margin-bottom:0;">
               <label>תאריך</label>
               <input type="date" id="slot-date-${participant.id}" />
@@ -955,10 +765,22 @@
             <button class="btn btn-primary" onclick="handleAddSlot('${meeting.id}', '${participant.id}')">הוספה</button>
           </div>
 
-          <div class="helper">אפשר להוסיף כמה תאריכים ושעות שרוצים. כל שורה היא אפשרות שהמשתתף פנוי בה.</div>
+          <div class="bulk-box">
+            <div class="field" style="margin-bottom:10px;">
+              <label>הדבקה מרוכזת של כמה מועדים בבת אחת</label>
+              <textarea id="bulk-slots-${participant.id}" rows="4" placeholder="דוגמה:
+2026-05-04 10:00
+2026-05-06 14:30
+2026-05-10 09:00"></textarea>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" onclick="handleBulkAdd('${meeting.id}', '${participant.id}')">הוספה מרוכזת</button>
+            </div>
+            <div class="helper" style="margin-top:8px;">כל מועד בשורה נפרדת בפורמט YYYY-MM-DD HH:MM.</div>
+          </div>
 
           <div class="slots-list">
-            ${participant.slots.length ? participant.slots.map(slot => `
+            ${participant.slots?.length ? participant.slots.map(slot => `
               <div class="slot-item">
                 <div class="slot-text">
                   <strong>${escapeHtml(formatDateTime(slot.iso))}</strong>
@@ -966,11 +788,38 @@
                 </div>
                 <button class="btn btn-danger" onclick="removeSlot('${meeting.id}', '${participant.id}', '${slot.id}')">מחיקה</button>
               </div>
-            `).join('') : `
-              <div class="empty-state">
-                עדיין לא הוזנה זמינות עבור ${escapeHtml(participant.name)}.
+            `).join('') : `<div class="empty-state">עדיין לא הוזנה זמינות עבור ${escapeHtml(participant.name)}.</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function heatmapHtml(meeting, stats) {
+      if (!stats.days.length || !stats.times.length) return '';
+      const maxClass = Math.min(Math.max(stats.participantCount, 1), 5);
+      return `
+        <div style="margin-top:16px;">
+          <h4 style="margin:0 0 10px;">לוח חפיפות צבעוני</h4>
+          <div class="helper" style="margin-bottom:10px;">ירוק = כולם יכולים. כחול כהה יותר = יותר אנשים יכולים.</div>
+          <div class="heatmap-wrap" style="--cols:${stats.days.length}">
+            <div class="heatmap-header">
+              <div class="heatmap-side">שעה / תאריך</div>
+              ${stats.days.map(day => `<div><strong>${escapeHtml(formatDate(day))}</strong></div>`).join('')}
+            </div>
+            ${stats.matrix.map(row => `
+              <div class="heatmap-row">
+                <div class="heatmap-side">${escapeHtml(row.time)}</div>
+                ${row.cells.map(cell => {
+                  const level = cell.isPerfect ? 'heat-perfect' : `heat-${Math.min(cell.count, maxClass)}`;
+                  return `
+                    <div class="heat-cell ${level}">
+                      <strong>${cell.count}/${stats.participantCount}</strong>
+                      <small>${escapeHtml(cell.names.join(', ') || 'אין זמינות')}</small>
+                    </div>
+                  `;
+                }).join('')}
               </div>
-            `}
+            `).join('')}
           </div>
         </div>
       `;
@@ -986,112 +835,164 @@
                 <div style="margin-top:6px;">${escapeHtml(formatDateTime(meeting.finalizedSlot))}</div>
               </div>
               <div class="btn-row">
-                ${meeting.status === 'closed' ? `<button class="btn btn-soft-warning" onclick="reopenMeeting('${meeting.id}')">פתיחה מחדש</button>` : `<button class="btn btn-soft-warning" onclick="reopenMeeting('${meeting.id}')">השארה כפתוחה</button>`}
-                <button class="btn btn-danger" onclick="clearFinalizedSlot('${meeting.id}')">מחיקת הקביעה</button>
+                ${meeting.status === 'closed' ? `<button class="btn btn-warning" onclick="reopenMeeting('${meeting.id}')">פתיחה מחדש</button>` : ''}
+                <button class="btn btn-danger" onclick="clearFinalized('${meeting.id}')">מחיקת הקביעה</button>
               </div>
             </div>
-            <div class="helper" style="margin-top:10px;">כל האפשרויות שסימנת עדיין נשארו במערכת למקרה שמשהו יזוז.</div>
-          </div>
-        ` : ''}
+            <div class="helper" style="margin-top:8px;">כל האפשרויות שסומנו נשארו במערכת למקרה שמשהו יזוז.</div>
+          </div>` : ''}
 
         <div class="summary-grid">
-          <div class="summary-box">
-            <h4>מספר משתתפים</h4>
-            <div class="big">${stats.participantCount}</div>
-          </div>
-          <div class="summary-box">
-            <h4>אפשרויות ייחודיות</h4>
-            <div class="big">${stats.allMarkedSlots}</div>
-          </div>
-          <div class="summary-box">
-            <h4>חפיפות מלאות</h4>
-            <div class="big">${stats.perfectMatches.length}</div>
-          </div>
+          <div class="summary-box"><h4>מספר משתתפים</h4><div class="big">${stats.participantCount}</div></div>
+          <div class="summary-box"><h4>אפשרויות ייחודיות</h4><div class="big">${stats.slotCount}</div></div>
+          <div class="summary-box"><h4>חפיפות מלאות</h4><div class="big">${stats.perfectMatches.length}</div></div>
         </div>
 
         ${stats.best ? `
-          <div class="recommendation-list">
-            <div class="recommendation-item" style="border-color: rgba(59,130,246,0.28); background: #f8fbff;">
-              <div class="recommendation-top">
-                <div>
-                  <strong>האפשרות המובילה</strong>
-                  <div style="margin-top:6px;">${escapeHtml(formatDateTime(stats.best.iso))}</div>
-                </div>
-                <div class="btn-row">
-                  <span class="badge ${stats.best.isPerfect ? 'badge-closed' : 'badge-open'}">${stats.best.isPerfect ? 'כולם יכולים' : stats.best.count + ' מתוך ' + stats.participantCount}</span>
-                  <button class="btn btn-success" onclick="finalizeMeeting('${meeting.id}', '${stats.best.iso}')">סגירת פגישה על המועד הזה</button>
-                </div>
+          <div class="recommendation-item" style="border-color: rgba(37,99,235,0.22); background: #f8fbff;">
+            <div class="recommendation-top">
+              <div>
+                <strong>האפשרות המובילה</strong>
+                <div style="margin-top:6px;">${escapeHtml(formatDateTime(stats.best.iso))}</div>
               </div>
-              <div class="progress-wrap">
-                <div class="progress-label">
-                  <span>התאמה</span>
-                  <span>${stats.best.percentage}%</span>
-                </div>
-                <div class="progress"><span style="width:${stats.best.percentage}%"></span></div>
+              <div class="btn-row">
+                <span class="badge ${stats.best.isPerfect ? 'badge-closed' : 'badge-open'}">${stats.best.isPerfect ? 'כולם יכולים' : stats.best.count + ' מתוך ' + stats.participantCount}</span>
+                <button class="btn btn-success" onclick="finalizeMeeting('${meeting.id}', '${stats.best.iso}')">סגירה על המועד הזה</button>
               </div>
-              <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(stats.best.names.join(', ') || '—')}</div>
-              <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(stats.best.missing.join(', ') || 'אין')}</div>
             </div>
-
-            <div>
-              <h4 style="margin: 18px 0 10px;">שאר האפשרויות לפי דירוג</h4>
-              ${stats.recommendations.length ? stats.recommendations.map(rec => `
-                <div class="recommendation-item">
-                  <div class="recommendation-top">
-                    <div>
-                      <strong>${escapeHtml(formatDateTime(rec.iso))}</strong>
-                    </div>
-                    <div class="btn-row">
-                      <span class="badge ${rec.isPerfect ? 'badge-closed' : 'badge-open'}">${rec.isPerfect ? 'כולם יכולים' : rec.count + ' מתוך ' + stats.participantCount}</span>
-                      <button class="btn btn-secondary" onclick="finalizeMeeting('${meeting.id}', '${rec.iso}')">בחירת המועד הזה</button>
-                    </div>
-                  </div>
-                  <div class="progress-wrap">
-                    <div class="progress-label">
-                      <span>אחוז התאמה</span>
-                      <span>${rec.percentage}%</span>
-                    </div>
-                    <div class="progress"><span style="width:${rec.percentage}%"></span></div>
-                  </div>
-                  <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(rec.names.join(', ') || '—')}</div>
-                  <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(rec.missing.join(', ') || 'אין')}</div>
-                </div>
-              `).join('') : `<div class="empty-state">כדי לקבל המלצה, צריך להזין לפחות מועד אחד.</div>`}
+            <div class="progress-wrap">
+              <div class="progress-label"><span>התאמה</span><span>${stats.best.percentage}%</span></div>
+              <div class="progress"><span style="width:${stats.best.percentage}%"></span></div>
             </div>
+            <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(stats.best.names.join(', ') || '—')}</div>
+            <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(stats.best.missing.join(', ') || 'אין')}</div>
           </div>
+
+          <div class="top3">
+            <h4 style="margin:0;">Top 3 מועדים</h4>
+            ${stats.top3.map((rec, index) => `
+              <div class="recommendation-item">
+                <div class="recommendation-top">
+                  <div><strong>#${index + 1} · ${escapeHtml(formatDateTime(rec.iso))}</strong></div>
+                  <div class="btn-row">
+                    <span class="badge ${rec.isPerfect ? 'badge-closed' : 'badge-open'}">${rec.isPerfect ? 'כולם יכולים' : rec.count + ' מתוך ' + stats.participantCount}</span>
+                    <button class="btn btn-secondary" onclick="finalizeMeeting('${meeting.id}', '${rec.iso}')">בחירת המועד הזה</button>
+                  </div>
+                </div>
+                <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(rec.names.join(', ') || '—')}</div>
+                <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(rec.missing.join(', ') || 'אין')}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          ${heatmapHtml(meeting, stats)}
         ` : `
           <div class="empty-state">
             <h3>אין עדיין מספיק נתונים</h3>
-            <p>ברגע שתוסיפי זמינויות למשתתפים, כאן תופיע הרשימה של המועדים הכי מתאימים.</p>
+            <p>ברגע שתוסיפי זמינויות למשתתפים, כאן תופיע המלצה, Top 3 ולוח חפיפות צבעוני.</p>
           </div>
         `}
       `;
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    function selectedMeetingHtml() {
+      const meeting = getSelectedMeeting();
+      if (!meeting) {
+        return `
+          <div class="card"><div class="content-pad"><div class="empty-state">
+            <h3>עדיין אין פגישה פעילה</h3>
+            <p>צרי פגישה חדשה, הוסיפי משתתפים, ואז תתחילי להזין תאריכים ושעות לכל משתתף.</p>
+          </div></div></div>
+        `;
+      }
+
+      const stats = computeMeetingStats(meeting);
+      const activeParticipant = (meeting.participants || []).find(p => p.id === state.activeParticipantId) || null;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?meeting=${meeting.id}`;
+
+      return `
+        <div class="card panel">
+          <div class="hero">
+            <div>
+              <h2>${escapeHtml(meeting.name)}</h2>
+              <p>${meeting.status === 'closed' ? 'הפגישה סגורה על מועד סופי, אבל כל האפשרויות שסומנו נשארו לשינויים עתידיים.' : 'הפגישה פתוחה. אפשר להמשיך להוסיף, למחוק ולעדכן נתונים בזמן אמת.'}</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" onclick="renameMeetingPrompt('${meeting.id}')">שינוי שם</button>
+              <button class="btn btn-danger" onclick="removeMeeting('${meeting.id}')">מחיקת פגישה</button>
+            </div>
+          </div>
+          <div class="field" style="margin-top:14px; margin-bottom:0;">
+            <label>הערות פנימיות</label>
+            <textarea rows="3" placeholder="למשל: עדיפות לימי שלישי בבוקר" oninput="debouncedNotesUpdate('${meeting.id}', this.value)">${escapeHtml(meeting.notes || '')}</textarea>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h3>ניהול משתתפים וזמינויות</h3>
+                <p>לכל משתתף יש לשונית משלו, ובתוכה אפשר להוסיף בלי הגבלה תאריכים ושעות.</p>
+              </div>
+              <button class="btn btn-primary" onclick="addParticipantPrompt('${meeting.id}')">+ משתתף חדש</button>
+            </div>
+            <div class="content-pad">
+              ${meeting.participants?.length ? `
+                <div class="participants-tabs">
+                  ${meeting.participants.map(participant => `
+                    <button class="tab-btn ${participant.id === state.activeParticipantId ? 'active' : ''}" onclick="setActiveParticipant('${participant.id}')">${escapeHtml(participant.name)}</button>
+                  `).join('')}
+                </div>
+                <div style="height:14px"></div>
+                ${participantPanelHtml(meeting, activeParticipant)}
+              ` : `
+                <div class="empty-state">
+                  <h3>אין עדיין משתתפים</h3>
+                  <p>התחילי מהוספת המשתתף הראשון. מיד אחר כך תופיע לו לשונית משלו.</p>
+                </div>
+              `}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h3>חפיפות, לינק ושיבוץ</h3>
+                <p>כאן רואים את המועדים הכי טובים, את שלושת המועדים המובילים, ואת לוח החפיפות הצבעוני.</p>
+              </div>
+            </div>
+            <div class="content-pad">
+              <div class="link-box">
+                <strong>לינק ישיר לפגישה הזאת</strong>
+                <div class="share-row">
+                  <input class="share-input" value="${escapeHtml(shareUrl)}" readonly />
+                  <button class="btn btn-violet" onclick="copyShareLink()">העתקת לינק</button>
+                </div>
+                <div class="helper" style="margin-top:8px;">כל מי שייכנס ללינק הזה ייפתח ישר על הפגישה הזאת. אם Firebase מחובר, כולם יראו את אותם נתונים.</div>
+              </div>
+              ${summaryHtml(meeting, stats)}
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function render() {
-      normalizeState();
+      normalizeSelectionFromUrl();
       const root = document.getElementById('app');
       root.innerHTML = `
         <div class="app">
           <aside class="sidebar">
             <div class="brand">
               <h1>Meeting Matcher</h1>
-              <p>יוצרים כמה פגישות שרוצים, מוסיפים משתתפים, מזינים לכל אחד תאריכים ושעות משלו, ומקבלים את המועד הכי מתאים.</p>
+              <p>ניהול כמה פגישות במקביל, לכל משתתף לשונית משלו, הוספת מועדים ללא הגבלה, לינק נפרד לכל פגישה וחפיפות בזמן אמת.</p>
             </div>
 
             <div class="card panel">
               <div class="field">
                 <label>פגישה חדשה</label>
-                <input id="new-meeting-name" type="text" placeholder="למשל: פגישת הנהלה עם הלקוח" />
+                <input id="new-meeting-name" type="text" placeholder="למשל: פגישת לקוח, תיאום הרצאה" />
               </div>
               <div class="btn-row">
                 <button class="btn btn-primary" onclick="handleCreateMeeting()">יצירת פגישה</button>
@@ -1099,48 +1000,156 @@
             </div>
 
             <div class="card panel">
-              <div class="meeting-title-row" style="margin-bottom: 14px;">
+              <div class="meeting-title-row" style="margin-bottom:12px;">
                 <div class="meeting-title">כל הפגישות</div>
-                <span class="badge badge-open">${state.meetings.length}</span>
+                <span class="badge badge-violet">${state.meetings.length}</span>
               </div>
-              <div class="meeting-list">
-                ${meetingListHtml()}
-              </div>
-            </div>
-
-            <div class="card panel">
-              <div class="meeting-title" style="margin-bottom: 12px;">גיבוי ושחזור</div>
-              <div class="btn-row">
-                <button class="btn btn-secondary" onclick="exportData()">ייצוא JSON</button>
-                <label class="btn btn-secondary" style="display:inline-flex; align-items:center; justify-content:center;">
-                  ייבוא JSON
-                  <input type="file" accept="application/json" style="display:none;" onchange="handleImport(event)" />
-                </label>
-              </div>
+              <div class="meeting-list">${meetingListHtml()}</div>
             </div>
 
             <div class="footer-note">
-              כל הנתונים נשמרים בדפדפן שלך אוטומטית. אם את רוצה גישה קבועה מכל מקום, אפשר להעלות את הקובץ ל-GitHub Pages או Netlify.
+              מצב נוכחי: ${state.mode === 'live' ? 'Firebase מחובר וכל המשתמשים רואים את אותם נתונים.' : 'מצב דמו מקומי בלבד. כדי לשתף בין כמה אנשים צריך לחבר Firebase.'}
             </div>
           </aside>
 
           <main class="main">
+            <div class="status-banner ${state.mode === 'live' ? 'status-live' : 'status-demo'}">
+              <div>
+                <strong>${state.mode === 'live' ? 'המערכת מחוברת לענן' : 'המערכת במצב דמו מקומי בלבד'}</strong>
+                <div class="helper" style="color: inherit; opacity: 0.9;">${state.mode === 'live' ? 'הנתונים נשמרים ב-Firebase ומסתנכרנים בזמן אמת בין משתמשים.' : 'במצב הזה הנתונים נשמרים רק בדפדפן המקומי. כדי לשתף עם אחרים צריך להכניס את פרטי Firebase בקוד.'}</div>
+              </div>
+              ${state.mode === 'demo' ? `<a class="btn btn-warning" href="https://console.firebase.google.com/" target="_blank" rel="noreferrer">פתיחת Firebase Console</a>` : ''}
+            </div>
             ${selectedMeetingHtml()}
           </main>
         </div>
       `;
     }
 
-    function selectMeeting(id) {
-      updateState(s => {
-        s.selectedMeetingId = id;
+    async function addParticipant(meetingId, name) {
+      const trimmed = name.trim();
+      if (!trimmed) return alert('צריך שם משתתף.');
+      await patchMeeting(meetingId, meeting => {
+        meeting.participants = meeting.participants || [];
+        const duplicate = meeting.participants.some(p => p.name.trim().toLowerCase() === trimmed.toLowerCase());
+        if (duplicate) throw new Error('duplicate');
+        const participant = { id: uid('person'), name: trimmed, slots: [] };
+        meeting.participants.push(participant);
+        state.activeParticipantId = participant.id;
+      }).catch(err => {
+        if (err.message === 'duplicate') alert('המשתתף כבר קיים בפגישה הזאת.');
+        else throw err;
       });
     }
 
-    function setActiveParticipant(id) {
-      updateState(s => {
-        s.activeParticipantId = id;
+    async function renameParticipant(meetingId, participantId, nextName) {
+      const trimmed = nextName.trim();
+      if (!trimmed) return alert('שם משתתף לא יכול להיות ריק.');
+      await patchMeeting(meetingId, meeting => {
+        const duplicate = (meeting.participants || []).some(p => p.id !== participantId && p.name.trim().toLowerCase() === trimmed.toLowerCase());
+        if (duplicate) throw new Error('duplicate');
+        const participant = meeting.participants.find(p => p.id === participantId);
+        if (!participant) throw new Error('missing');
+        participant.name = trimmed;
+      }).catch(err => {
+        if (err.message === 'duplicate') alert('כבר יש משתתף אחר עם השם הזה.');
       });
+    }
+
+    async function removeParticipantFromMeeting(meetingId, participantId) {
+      const meeting = getMeetingById(meetingId);
+      const participant = meeting?.participants?.find(p => p.id === participantId);
+      if (!participant) return;
+      if (!confirm(`למחוק את ${participant.name} מהפגישה?`)) return;
+      await patchMeeting(meetingId, next => {
+        next.participants = next.participants.filter(p => p.id !== participantId);
+      });
+    }
+
+    async function addSlot(meetingId, participantId, date, time) {
+      if (!date || !time) return alert('צריך לבחור גם תאריך וגם שעה.');
+      const iso = `${date}T${time}`;
+      await patchMeeting(meetingId, meeting => {
+        const participant = meeting.participants.find(p => p.id === participantId);
+        if (!participant) throw new Error('missing');
+        participant.slots = participant.slots || [];
+        if (participant.slots.some(s => s.iso === iso)) throw new Error('duplicate');
+        participant.slots.push({ id: uid('slot'), iso });
+        participant.slots.sort((a, b) => a.iso.localeCompare(b.iso));
+      }).catch(err => {
+        if (err.message === 'duplicate') alert('המועד הזה כבר קיים אצל המשתתף.');
+      });
+    }
+
+    async function bulkAddSlots(meetingId, participantId, text) {
+      const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+      if (!lines.length) return alert('לא הודבק שום מועד.');
+
+      const parsed = [];
+      for (const line of lines) {
+        const normalized = line.replace(/\s+/, ' ');
+        const match = normalized.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})$/);
+        if (!match) return alert(`השורה הזאת לא בפורמט תקין: ${line}`);
+        parsed.push(`${match[1]}T${match[2]}`);
+      }
+
+      await patchMeeting(meetingId, meeting => {
+        const participant = meeting.participants.find(p => p.id === participantId);
+        if (!participant) throw new Error('missing');
+        participant.slots = participant.slots || [];
+        const existing = new Set(participant.slots.map(s => s.iso));
+        parsed.forEach(iso => {
+          if (!existing.has(iso)) participant.slots.push({ id: uid('slot'), iso });
+        });
+        participant.slots.sort((a, b) => a.iso.localeCompare(b.iso));
+      });
+    }
+
+    async function removeSlotFromParticipant(meetingId, participantId, slotId) {
+      await patchMeeting(meetingId, meeting => {
+        const participant = meeting.participants.find(p => p.id === participantId);
+        if (!participant) throw new Error('missing');
+        participant.slots = participant.slots.filter(s => s.id !== slotId);
+      });
+    }
+
+    async function finalizeMeetingChoice(meetingId, iso) {
+      await patchMeeting(meetingId, meeting => {
+        meeting.finalizedSlot = iso;
+        meeting.status = 'closed';
+      });
+    }
+
+    async function reopenMeetingById(meetingId) {
+      await patchMeeting(meetingId, meeting => { meeting.status = 'open'; });
+    }
+
+    async function clearFinalizedById(meetingId) {
+      await patchMeeting(meetingId, meeting => {
+        meeting.status = 'open';
+        meeting.finalizedSlot = null;
+      });
+    }
+
+    async function renameMeeting(meetingId, nextName) {
+      const trimmed = nextName.trim();
+      if (!trimmed) return alert('שם פגישה לא יכול להיות ריק.');
+      await patchMeeting(meetingId, meeting => { meeting.name = trimmed; });
+    }
+
+    let notesTimer = null;
+    function debouncedNotesUpdate(meetingId, value) {
+      clearTimeout(notesTimer);
+      notesTimer = setTimeout(() => {
+        patchMeeting(meetingId, meeting => { meeting.notes = value; });
+      }, 350);
+    }
+
+    function copyShareLink() {
+      const meeting = getSelectedMeeting();
+      if (!meeting) return;
+      const link = `${window.location.origin}${window.location.pathname}?meeting=${meeting.id}`;
+      navigator.clipboard.writeText(link).then(() => alert('הלינק הועתק.'));
     }
 
     function handleCreateMeeting() {
@@ -1148,6 +1157,17 @@
       if (!input) return;
       createMeeting(input.value);
       input.value = '';
+    }
+
+    function setActiveParticipant(id) {
+      state.activeParticipantId = id;
+      render();
+    }
+
+    function selectMeeting(id) {
+      state.selectedMeetingId = id;
+      normalizeSelectionFromUrl();
+      render();
     }
 
     function addParticipantPrompt(meetingId) {
@@ -1158,11 +1178,11 @@
 
     function renameParticipantPrompt(meetingId, participantId) {
       const meeting = getMeetingById(meetingId);
-      const participant = meeting?.participants.find(p => p.id === participantId);
+      const participant = meeting?.participants?.find(p => p.id === participantId);
       if (!participant) return;
-      const name = prompt('שם חדש למשתתף:', participant.name);
-      if (name === null) return;
-      renameParticipant(meetingId, participantId, name);
+      const next = prompt('שם חדש למשתתף:', participant.name);
+      if (next === null) return;
+      renameParticipant(meetingId, participantId, next);
     }
 
     function renameMeetingPrompt(meetingId) {
@@ -1170,43 +1190,44 @@
       if (!meeting) return;
       const next = prompt('שם חדש לפגישה:', meeting.name);
       if (next === null) return;
-      updateMeetingName(meetingId, next);
+      renameMeeting(meetingId, next);
     }
 
     function handleAddSlot(meetingId, participantId) {
-      const dateInput = document.getElementById(`slot-date-${participantId}`);
-      const timeInput = document.getElementById(`slot-time-${participantId}`);
-      if (!dateInput || !timeInput) return;
-      addSlot(meetingId, participantId, dateInput.value, timeInput.value);
-      timeInput.value = '';
+      const date = document.getElementById(`slot-date-${participantId}`)?.value;
+      const time = document.getElementById(`slot-time-${participantId}`)?.value;
+      addSlot(meetingId, participantId, date, time).then(() => {
+        const timeInput = document.getElementById(`slot-time-${participantId}`);
+        if (timeInput) timeInput.value = '';
+      });
     }
 
-    function handleImport(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      importData(file);
-      event.target.value = '';
+    function handleBulkAdd(meetingId, participantId) {
+      const textarea = document.getElementById(`bulk-slots-${participantId}`);
+      if (!textarea) return;
+      bulkAddSlots(meetingId, participantId, textarea.value).then(() => {
+        textarea.value = '';
+      });
     }
 
     window.handleCreateMeeting = handleCreateMeeting;
     window.selectMeeting = selectMeeting;
+    window.setActiveParticipant = setActiveParticipant;
     window.addParticipantPrompt = addParticipantPrompt;
     window.renameParticipantPrompt = renameParticipantPrompt;
     window.renameMeetingPrompt = renameMeetingPrompt;
-    window.removeParticipant = removeParticipant;
-    window.setActiveParticipant = setActiveParticipant;
     window.handleAddSlot = handleAddSlot;
-    window.removeSlot = removeSlot;
-    window.finalizeMeeting = finalizeMeeting;
-    window.reopenMeeting = reopenMeeting;
-    window.clearFinalizedSlot = clearFinalizedSlot;
-    window.deleteMeeting = deleteMeeting;
-    window.updateMeetingNotes = updateMeetingNotes;
-    window.exportData = exportData;
-    window.handleImport = handleImport;
+    window.handleBulkAdd = handleBulkAdd;
+    window.removeMeeting = removeMeeting;
+    window.removeParticipant = removeParticipantFromMeeting;
+    window.removeSlot = removeSlotFromParticipant;
+    window.finalizeMeeting = finalizeMeetingChoice;
+    window.reopenMeeting = reopenMeetingById;
+    window.clearFinalized = clearFinalizedById;
+    window.copyShareLink = copyShareLink;
+    window.debouncedNotesUpdate = debouncedNotesUpdate;
 
     render();
   </script>
 </body>
 </html>
-
