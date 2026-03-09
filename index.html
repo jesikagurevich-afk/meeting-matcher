@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Matcher</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --line: #e4e7ee;
+      --text: #1d2433;
+      --muted: #697184;
+      --accent: #3b82f6;
+      --accent-soft: #e9f1ff;
+      --success: #16a34a;
+      --success-soft: #e9f9ef;
+      --warning: #f59e0b;
+      --warning-soft: #fff5df;
+      --danger: #dc2626;
+      --danger-soft: #feecec;
+      --shadow: 0 12px 30px rgba(21, 33, 58, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #111827;
+      color: #fff;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      border-left: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .brand p {
+      margin: 0;
+      color: rgba(255,255,255,0.76);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar .card {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: none;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .sidebar .field label {
+      color: rgba(255,255,255,0.8);
+    }
+
+    input, select, button, textarea {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px 14px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .sidebar input,
+    .sidebar select,
+    .sidebar textarea {
+      background: rgba(255,255,255,0.92);
+      border-color: transparent;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #eef2f7;
+      color: var(--text);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .btn-soft-warning {
+      background: var(--warning-soft);
+      color: #8a5a00;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .main {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .meeting-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 46vh;
+      overflow: auto;
+      padding-left: 2px;
+    }
+
+    .meeting-item {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      padding: 14px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      transition: 0.18s ease;
+    }
+
+    .meeting-item:hover,
+    .meeting-item.active {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    .meeting-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meeting-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .meeting-meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-open {
+      background: var(--warning-soft);
+      color: #8a5a00;
+    }
+
+    .badge-closed {
+      background: var(--success-soft);
+      color: #0c7a35;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .section-header {
+      padding: 18px 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .section-header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .content-pad {
+      padding: 18px;
+    }
+
+    .participants-tabs {
+      display: flex;
+      gap: 10px;
+      overflow: auto;
+      padding-bottom: 6px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-soft);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: #1755b3;
+    }
+
+    .participant-panel {
+      display: grid;
+      gap: 14px;
+    }
+
+    .slot-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .slots-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 340px;
+      overflow: auto;
+      padding-left: 2px;
+    }
+
+    .slot-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fff;
+    }
+
+    .slot-text strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .slot-text small {
+      color: var(--muted);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .summary-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .summary-box h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .summary-box .big {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .recommendation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .recommendation-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .recommendation-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 10px;
+      background: #edf1f7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      border-radius: 999px;
+    }
+
+    .names-line {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .finalized-box {
+      border: 1px solid rgba(22,163,74,0.18);
+      background: var(--success-soft);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state {
+      border: 2px dashed var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,0.55);
+    }
+
+    .helper {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: auto;
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-left: none;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .main {
+        padding: 18px;
+      }
+
+      .slot-form,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const STORAGE_KEY = 'meeting-matcher-v1';
+
+    const initialState = {
+      meetings: [],
+      selectedMeetingId: null,
+      activeParticipantId: null
+    };
+
+    let state = loadState();
+
+    function uid(prefix = 'id') {
+      return `${prefix}_${Math.random().toString(36).slice(2, 9)}${Date.now().toString(36).slice(-4)}`;
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(initialState);
+        const parsed = JSON.parse(raw);
+        return {
+          meetings: Array.isArray(parsed.meetings) ? parsed.meetings : [],
+          selectedMeetingId: parsed.selectedMeetingId || null,
+          activeParticipantId: parsed.activeParticipantId || null
+        };
+      } catch (error) {
+        console.error('Failed to load state', error);
+        return structuredClone(initialState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function updateState(mutator) {
+      mutator(state);
+      normalizeState();
+      saveState();
+      render();
+    }
+
+    function normalizeState() {
+      if (!state.meetings.length) {
+        state.selectedMeetingId = null;
+        state.activeParticipantId = null;
+        return;
+      }
+
+      const selectedMeeting = getSelectedMeeting();
+      if (!selectedMeeting) {
+        state.selectedMeetingId = state.meetings[0].id;
+      }
+
+      const meeting = getSelectedMeeting();
+      if (!meeting) return;
+
+      if (!meeting.participants.length) {
+        state.activeParticipantId = null;
+        return;
+      }
+
+      const activeExists = meeting.participants.some(p => p.id === state.activeParticipantId);
+      if (!activeExists) {
+        state.activeParticipantId = meeting.participants[0].id;
+      }
+    }
+
+    function getSelectedMeeting() {
+      return state.meetings.find(m => m.id === state.selectedMeetingId) || null;
+    }
+
+    function getMeetingById(id) {
+      return state.meetings.find(m => m.id === id) || null;
+    }
+
+    function createMeeting(name) {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        alert('צריך שם לפגישה.');
+        return;
+      }
+
+      updateState(s => {
+        const meeting = {
+          id: uid('meeting'),
+          name: trimmed,
+          status: 'open',
+          finalizedSlot: null,
+          createdAt: new Date().toISOString(),
+          participants: [],
+          notes: ''
+        };
+        s.meetings.unshift(meeting);
+        s.selectedMeetingId = meeting.id;
+        s.activeParticipantId = null;
+      });
+    }
+
+    function deleteMeeting(meetingId) {
+      const meeting = getMeetingById(meetingId);
+      if (!meeting) return;
+      const ok = confirm(`למחוק את הפגישה "${meeting.name}"? כל הנתונים יימחקו.`);
+      if (!ok) return;
+
+      updateState(s => {
+        s.meetings = s.meetings.filter(m => m.id !== meetingId);
+      });
+    }
+
+    function addParticipant(meetingId, name) {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        alert('צריך שם משתתף.');
+        return;
+      }
+
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+
+        const exists = meeting.participants.some(p => p.name.trim().toLowerCase() === trimmed.toLowerCase());
+        if (exists) {
+          alert('המשתתף כבר קיים בפגישה הזאת.');
+          return;
+        }
+
+        const participant = {
+          id: uid('person'),
+          name: trimmed,
+          slots: []
+        };
+        meeting.participants.push(participant);
+        s.activeParticipantId = participant.id;
+      });
+    }
+
+    function renameParticipant(meetingId, participantId, nextName) {
+      const trimmed = nextName.trim();
+      if (!trimmed) {
+        alert('שם משתתף לא יכול להיות ריק.');
+        return;
+      }
+
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        const duplicate = meeting.participants.some(p => p.id !== participantId && p.name.trim().toLowerCase() === trimmed.toLowerCase());
+        if (duplicate) {
+          alert('כבר יש משתתף אחר עם השם הזה בפגישה הזאת.');
+          return;
+        }
+        const participant = meeting.participants.find(p => p.id === participantId);
+        if (!participant) return;
+        participant.name = trimmed;
+      });
+    }
+
+    function removeParticipant(meetingId, participantId) {
+      const meeting = getMeetingById(meetingId);
+      const participant = meeting?.participants.find(p => p.id === participantId);
+      if (!meeting || !participant) return;
+      const ok = confirm(`למחוק את ${participant.name} מהפגישה?`);
+      if (!ok) return;
+
+      updateState(s => {
+        const targetMeeting = s.meetings.find(m => m.id === meetingId);
+        if (!targetMeeting) return;
+        targetMeeting.participants = targetMeeting.participants.filter(p => p.id !== participantId);
+      });
+    }
+
+    function addSlot(meetingId, participantId, date, time) {
+      if (!date || !time) {
+        alert('צריך לבחור גם תאריך וגם שעה.');
+        return;
+      }
+      const iso = `${date}T${time}`;
+
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        const participant = meeting?.participants.find(p => p.id === participantId);
+        if (!participant) return;
+        const exists = participant.slots.some(slot => slot.iso === iso);
+        if (exists) {
+          alert('הזמן הזה כבר קיים אצל המשתתף הזה.');
+          return;
+        }
+        participant.slots.push({ id: uid('slot'), iso });
+        participant.slots.sort((a, b) => a.iso.localeCompare(b.iso));
+      });
+    }
+
+    function removeSlot(meetingId, participantId, slotId) {
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        const participant = meeting?.participants.find(p => p.id === participantId);
+        if (!participant) return;
+        participant.slots = participant.slots.filter(slot => slot.id !== slotId);
+      });
+    }
+
+    function finalizeMeeting(meetingId, iso) {
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        meeting.finalizedSlot = iso;
+        meeting.status = 'closed';
+      });
+    }
+
+    function reopenMeeting(meetingId) {
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        meeting.status = 'open';
+      });
+    }
+
+    function clearFinalizedSlot(meetingId) {
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        meeting.finalizedSlot = null;
+        meeting.status = 'open';
+      });
+    }
+
+    function updateMeetingName(meetingId, nextName) {
+      const trimmed = nextName.trim();
+      if (!trimmed) {
+        alert('שם פגישה לא יכול להיות ריק.');
+        return;
+      }
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        meeting.name = trimmed;
+      });
+    }
+
+    function updateMeetingNotes(meetingId, notes) {
+      updateState(s => {
+        const meeting = s.meetings.find(m => m.id === meetingId);
+        if (!meeting) return;
+        meeting.notes = notes;
+      });
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'meeting-matcher-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          state = {
+            meetings: Array.isArray(parsed.meetings) ? parsed.meetings : [],
+            selectedMeetingId: parsed.selectedMeetingId || null,
+            activeParticipantId: parsed.activeParticipantId || null
+          };
+          normalizeState();
+          saveState();
+          render();
+        } catch (error) {
+          alert('הקובץ לא תקין.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function formatDateTime(iso) {
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return iso;
+      return new Intl.DateTimeFormat('he-IL', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }).format(date);
+    }
+
+    function computeMeetingStats(meeting) {
+      const participantCount = meeting.participants.length;
+      const slotMap = new Map();
+
+      meeting.participants.forEach(participant => {
+        participant.slots.forEach(slot => {
+          if (!slotMap.has(slot.iso)) {
+            slotMap.set(slot.iso, []);
+          }
+          slotMap.get(slot.iso).push(participant.name);
+        });
+      });
+
+      const recommendations = Array.from(slotMap.entries()).map(([iso, names]) => {
+        const uniqueNames = [...new Set(names)].sort((a, b) => a.localeCompare(b, 'he'));
+        const count = uniqueNames.length;
+        const missing = meeting.participants
+          .map(p => p.name)
+          .filter(name => !uniqueNames.includes(name));
+        return {
+          iso,
+          count,
+          names: uniqueNames,
+          missing,
+          percentage: participantCount ? Math.round((count / participantCount) * 100) : 0,
+          isPerfect: participantCount > 0 && count === participantCount
+        };
+      }).sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        return a.iso.localeCompare(b.iso);
+      });
+
+      return {
+        participantCount,
+        allMarkedSlots: recommendations.length,
+        recommendations,
+        perfectMatches: recommendations.filter(r => r.isPerfect),
+        best: recommendations[0] || null
+      };
+    }
+
+    function meetingListHtml() {
+      if (!state.meetings.length) {
+        return `<div class="helper">עדיין אין פגישות. יוצרים פגישה חדשה מהטופס למעלה.</div>`;
+      }
+
+      return state.meetings.map(meeting => {
+        const stats = computeMeetingStats(meeting);
+        const isActive = state.selectedMeetingId === meeting.id;
+        return `
+          <div class="meeting-item ${isActive ? 'active' : ''}" onclick="selectMeeting('${meeting.id}')">
+            <div class="meeting-title-row">
+              <div class="meeting-title">${escapeHtml(meeting.name)}</div>
+              <span class="badge ${meeting.status === 'closed' ? 'badge-closed' : 'badge-open'}">${meeting.status === 'closed' ? 'סגורה' : 'פתוחה'}</span>
+            </div>
+            <div class="meeting-meta">
+              <span>משתתפים: ${meeting.participants.length}</span>
+              <span>אפשרויות: ${stats.allMarkedSlots}</span>
+            </div>
+            ${meeting.finalizedSlot ? `<div class="meeting-meta"><span>נקבעה ל־${escapeHtml(formatDateTime(meeting.finalizedSlot))}</span></div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectedMeetingHtml() {
+      const meeting = getSelectedMeeting();
+      if (!meeting) {
+        return `
+          <div class="card">
+            <div class="content-pad">
+              <div class="empty-state">
+                <h3>עוד אין פגישה פתוחה לעבודה</h3>
+                <p>צרי פגישה חדשה מצד ימין, הוסיפי משתתפים, ואז התחילי להזין תאריכים ושעות.</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const stats = computeMeetingStats(meeting);
+      const activeParticipant = meeting.participants.find(p => p.id === state.activeParticipantId) || null;
+
+      return `
+        <div class="topbar card">
+          <div class="panel" style="width: 100%;">
+            <div class="topbar">
+              <div>
+                <h2>${escapeHtml(meeting.name)}</h2>
+                <p>
+                  ${meeting.status === 'closed' ? 'הפגישה סגורה, אבל כל האפשרויות שסימנת נשמרו.' : 'הפגישה פתוחה. אפשר להמשיך להוסיף, למחוק ולשנות זמינויות.'}
+                </p>
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-secondary" onclick="renameMeetingPrompt('${meeting.id}')">שינוי שם</button>
+                <button class="btn btn-secondary" onclick="exportData()">ייצוא גיבוי</button>
+                <button class="btn btn-danger" onclick="deleteMeeting('${meeting.id}')">מחיקת פגישה</button>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 14px; margin-bottom: 0;">
+              <label>הערות פנימיות</label>
+              <textarea rows="3" placeholder="למשל: לקוחה מעדיפה ימים שלישי-רביעי" oninput="updateMeetingNotes('${meeting.id}', this.value)">${escapeHtml(meeting.notes || '')}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h3>ניהול משתתפים וזמינויות</h3>
+                <p>לכל משתתף יש לשונית משלו, ובתוכה אפשר להוסיף בלי הגבלה תאריכים ושעות.</p>
+              </div>
+              <button class="btn btn-primary" onclick="addParticipantPrompt('${meeting.id}')">+ משתתף חדש</button>
+            </div>
+            <div class="content-pad">
+              ${meeting.participants.length ? `
+                <div class="participants-tabs">
+                  ${meeting.participants.map(participant => `
+                    <button class="tab-btn ${participant.id === state.activeParticipantId ? 'active' : ''}" onclick="setActiveParticipant('${participant.id}')">
+                      ${escapeHtml(participant.name)}
+                    </button>
+                  `).join('')}
+                </div>
+                <div style="height: 14px;"></div>
+                ${activeParticipant ? participantPanelHtml(meeting, activeParticipant) : ''}
+              ` : `
+                <div class="empty-state">
+                  <h3>אין עדיין משתתפים בפגישה הזאת</h3>
+                  <p>התחילי מהוספת המשתתף הראשון ואז תופיע לו לשונית נפרדת עם הזנת תאריכים ושעות.</p>
+                </div>
+              `}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h3>התאריך המתאים ביותר</h3>
+                <p>המערכת מדרגת את כל האפשרויות לפי מספר המשתתפים שיכולים בכל מועד.</p>
+              </div>
+            </div>
+            <div class="content-pad">
+              ${summaryHtml(meeting, stats)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function participantPanelHtml(meeting, participant) {
+      return `
+        <div class="participant-panel">
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="renameParticipantPrompt('${meeting.id}', '${participant.id}')">שינוי שם</button>
+            <button class="btn btn-danger" onclick="removeParticipant('${meeting.id}', '${participant.id}')">מחיקת משתתף</button>
+          </div>
+
+          <div class="slot-form">
+            <div class="field" style="margin-bottom:0;">
+              <label>תאריך</label>
+              <input type="date" id="slot-date-${participant.id}" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>שעה</label>
+              <input type="time" id="slot-time-${participant.id}" />
+            </div>
+            <button class="btn btn-primary" onclick="handleAddSlot('${meeting.id}', '${participant.id}')">הוספה</button>
+          </div>
+
+          <div class="helper">אפשר להוסיף כמה תאריכים ושעות שרוצים. כל שורה היא אפשרות שהמשתתף פנוי בה.</div>
+
+          <div class="slots-list">
+            ${participant.slots.length ? participant.slots.map(slot => `
+              <div class="slot-item">
+                <div class="slot-text">
+                  <strong>${escapeHtml(formatDateTime(slot.iso))}</strong>
+                  <small>${escapeHtml(participant.name)} פנוי במועד הזה</small>
+                </div>
+                <button class="btn btn-danger" onclick="removeSlot('${meeting.id}', '${participant.id}', '${slot.id}')">מחיקה</button>
+              </div>
+            `).join('') : `
+              <div class="empty-state">
+                עדיין לא הוזנה זמינות עבור ${escapeHtml(participant.name)}.
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function summaryHtml(meeting, stats) {
+      return `
+        ${meeting.finalizedSlot ? `
+          <div class="finalized-box">
+            <div class="recommendation-top">
+              <div>
+                <strong>המועד שנבחר</strong>
+                <div style="margin-top:6px;">${escapeHtml(formatDateTime(meeting.finalizedSlot))}</div>
+              </div>
+              <div class="btn-row">
+                ${meeting.status === 'closed' ? `<button class="btn btn-soft-warning" onclick="reopenMeeting('${meeting.id}')">פתיחה מחדש</button>` : `<button class="btn btn-soft-warning" onclick="reopenMeeting('${meeting.id}')">השארה כפתוחה</button>`}
+                <button class="btn btn-danger" onclick="clearFinalizedSlot('${meeting.id}')">מחיקת הקביעה</button>
+              </div>
+            </div>
+            <div class="helper" style="margin-top:10px;">כל האפשרויות שסימנת עדיין נשארו במערכת למקרה שמשהו יזוז.</div>
+          </div>
+        ` : ''}
+
+        <div class="summary-grid">
+          <div class="summary-box">
+            <h4>מספר משתתפים</h4>
+            <div class="big">${stats.participantCount}</div>
+          </div>
+          <div class="summary-box">
+            <h4>אפשרויות ייחודיות</h4>
+            <div class="big">${stats.allMarkedSlots}</div>
+          </div>
+          <div class="summary-box">
+            <h4>חפיפות מלאות</h4>
+            <div class="big">${stats.perfectMatches.length}</div>
+          </div>
+        </div>
+
+        ${stats.best ? `
+          <div class="recommendation-list">
+            <div class="recommendation-item" style="border-color: rgba(59,130,246,0.28); background: #f8fbff;">
+              <div class="recommendation-top">
+                <div>
+                  <strong>האפשרות המובילה</strong>
+                  <div style="margin-top:6px;">${escapeHtml(formatDateTime(stats.best.iso))}</div>
+                </div>
+                <div class="btn-row">
+                  <span class="badge ${stats.best.isPerfect ? 'badge-closed' : 'badge-open'}">${stats.best.isPerfect ? 'כולם יכולים' : stats.best.count + ' מתוך ' + stats.participantCount}</span>
+                  <button class="btn btn-success" onclick="finalizeMeeting('${meeting.id}', '${stats.best.iso}')">סגירת פגישה על המועד הזה</button>
+                </div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-label">
+                  <span>התאמה</span>
+                  <span>${stats.best.percentage}%</span>
+                </div>
+                <div class="progress"><span style="width:${stats.best.percentage}%"></span></div>
+              </div>
+              <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(stats.best.names.join(', ') || '—')}</div>
+              <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(stats.best.missing.join(', ') || 'אין')}</div>
+            </div>
+
+            <div>
+              <h4 style="margin: 18px 0 10px;">שאר האפשרויות לפי דירוג</h4>
+              ${stats.recommendations.length ? stats.recommendations.map(rec => `
+                <div class="recommendation-item">
+                  <div class="recommendation-top">
+                    <div>
+                      <strong>${escapeHtml(formatDateTime(rec.iso))}</strong>
+                    </div>
+                    <div class="btn-row">
+                      <span class="badge ${rec.isPerfect ? 'badge-closed' : 'badge-open'}">${rec.isPerfect ? 'כולם יכולים' : rec.count + ' מתוך ' + stats.participantCount}</span>
+                      <button class="btn btn-secondary" onclick="finalizeMeeting('${meeting.id}', '${rec.iso}')">בחירת המועד הזה</button>
+                    </div>
+                  </div>
+                  <div class="progress-wrap">
+                    <div class="progress-label">
+                      <span>אחוז התאמה</span>
+                      <span>${rec.percentage}%</span>
+                    </div>
+                    <div class="progress"><span style="width:${rec.percentage}%"></span></div>
+                  </div>
+                  <div class="names-line"><strong>יכולים:</strong> ${escapeHtml(rec.names.join(', ') || '—')}</div>
+                  <div class="names-line"><strong>לא יכולים:</strong> ${escapeHtml(rec.missing.join(', ') || 'אין')}</div>
+                </div>
+              `).join('') : `<div class="empty-state">כדי לקבל המלצה, צריך להזין לפחות מועד אחד.</div>`}
+            </div>
+          </div>
+        ` : `
+          <div class="empty-state">
+            <h3>אין עדיין מספיק נתונים</h3>
+            <p>ברגע שתוסיפי זמינויות למשתתפים, כאן תופיע הרשימה של המועדים הכי מתאימים.</p>
+          </div>
+        `}
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function render() {
+      normalizeState();
+      const root = document.getElementById('app');
+      root.innerHTML = `
+        <div class="app">
+          <aside class="sidebar">
+            <div class="brand">
+              <h1>Meeting Matcher</h1>
+              <p>יוצרים כמה פגישות שרוצים, מוסיפים משתתפים, מזינים לכל אחד תאריכים ושעות משלו, ומקבלים את המועד הכי מתאים.</p>
+            </div>
+
+            <div class="card panel">
+              <div class="field">
+                <label>פגישה חדשה</label>
+                <input id="new-meeting-name" type="text" placeholder="למשל: פגישת הנהלה עם הלקוח" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="handleCreateMeeting()">יצירת פגישה</button>
+              </div>
+            </div>
+
+            <div class="card panel">
+              <div class="meeting-title-row" style="margin-bottom: 14px;">
+                <div class="meeting-title">כל הפגישות</div>
+                <span class="badge badge-open">${state.meetings.length}</span>
+              </div>
+              <div class="meeting-list">
+                ${meetingListHtml()}
+              </div>
+            </div>
+
+            <div class="card panel">
+              <div class="meeting-title" style="margin-bottom: 12px;">גיבוי ושחזור</div>
+              <div class="btn-row">
+                <button class="btn btn-secondary" onclick="exportData()">ייצוא JSON</button>
+                <label class="btn btn-secondary" style="display:inline-flex; align-items:center; justify-content:center;">
+                  ייבוא JSON
+                  <input type="file" accept="application/json" style="display:none;" onchange="handleImport(event)" />
+                </label>
+              </div>
+            </div>
+
+            <div class="footer-note">
+              כל הנתונים נשמרים בדפדפן שלך אוטומטית. אם את רוצה גישה קבועה מכל מקום, אפשר להעלות את הקובץ ל-GitHub Pages או Netlify.
+            </div>
+          </aside>
+
+          <main class="main">
+            ${selectedMeetingHtml()}
+          </main>
+        </div>
+      `;
+    }
+
+    function selectMeeting(id) {
+      updateState(s => {
+        s.selectedMeetingId = id;
+      });
+    }
+
+    function setActiveParticipant(id) {
+      updateState(s => {
+        s.activeParticipantId = id;
+      });
+    }
+
+    function handleCreateMeeting() {
+      const input = document.getElementById('new-meeting-name');
+      if (!input) return;
+      createMeeting(input.value);
+      input.value = '';
+    }
+
+    function addParticipantPrompt(meetingId) {
+      const name = prompt('שם המשתתף:');
+      if (name === null) return;
+      addParticipant(meetingId, name);
+    }
+
+    function renameParticipantPrompt(meetingId, participantId) {
+      const meeting = getMeetingById(meetingId);
+      const participant = meeting?.participants.find(p => p.id === participantId);
+      if (!participant) return;
+      const name = prompt('שם חדש למשתתף:', participant.name);
+      if (name === null) return;
+      renameParticipant(meetingId, participantId, name);
+    }
+
+    function renameMeetingPrompt(meetingId) {
+      const meeting = getMeetingById(meetingId);
+      if (!meeting) return;
+      const next = prompt('שם חדש לפגישה:', meeting.name);
+      if (next === null) return;
+      updateMeetingName(meetingId, next);
+    }
+
+    function handleAddSlot(meetingId, participantId) {
+      const dateInput = document.getElementById(`slot-date-${participantId}`);
+      const timeInput = document.getElementById(`slot-time-${participantId}`);
+      if (!dateInput || !timeInput) return;
+      addSlot(meetingId, participantId, dateInput.value, timeInput.value);
+      timeInput.value = '';
+    }
+
+    function handleImport(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      importData(file);
+      event.target.value = '';
+    }
+
+    window.handleCreateMeeting = handleCreateMeeting;
+    window.selectMeeting = selectMeeting;
+    window.addParticipantPrompt = addParticipantPrompt;
+    window.renameParticipantPrompt = renameParticipantPrompt;
+    window.renameMeetingPrompt = renameMeetingPrompt;
+    window.removeParticipant = removeParticipant;
+    window.setActiveParticipant = setActiveParticipant;
+    window.handleAddSlot = handleAddSlot;
+    window.removeSlot = removeSlot;
+    window.finalizeMeeting = finalizeMeeting;
+    window.reopenMeeting = reopenMeeting;
+    window.clearFinalizedSlot = clearFinalizedSlot;
+    window.deleteMeeting = deleteMeeting;
+    window.updateMeetingNotes = updateMeetingNotes;
+    window.exportData = exportData;
+    window.handleImport = handleImport;
+
+    render();
+  </script>
+</body>
+</html>
+
