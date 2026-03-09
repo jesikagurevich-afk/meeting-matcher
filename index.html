@@ -549,19 +549,18 @@
       });
     }
 
-    function normalizeSelectionFromUrl() {
+    function normalizeSelectionFromUrl(forceFromUrl = false) {
   const urlId = new URL(window.location.href).searchParams.get('meeting');
-  const currentExists =
+  const selectedExists =
     state.selectedMeetingId && state.meetings.some(m => m.id === state.selectedMeetingId);
   const urlExists =
     urlId && state.meetings.some(m => m.id === urlId);
 
-  if (currentExists) {
-    // שומרים את הבחירה הנוכחית של המשתמש בתוך האפליקציה
-  } else if (urlExists) {
-    // רק אם אין בחירה קיימת, נשתמש במה שמופיע בלינק
+  if (forceFromUrl && urlExists) {
     state.selectedMeetingId = urlId;
-  } else {
+  } else if (!selectedExists && urlExists) {
+    state.selectedMeetingId = urlId;
+  } else if (!selectedExists) {
     state.selectedMeetingId = state.meetings[0]?.id || null;
   }
 
@@ -1175,11 +1174,11 @@
       render();
     }
 
-    function selectMeeting(id) {
-      state.selectedMeetingId = id;
-      normalizeSelectionFromUrl();
-      render();
-    }
+   function selectMeeting(id) {
+  state.selectedMeetingId = id;
+  syncUrl(id);
+  render();
+}
 
     function addParticipantPrompt(meetingId) {
       const name = prompt('שם המשתתף:');
@@ -1242,5 +1241,6 @@
   </script>
 </body>
 </html>
+
 
 
